@@ -27,7 +27,7 @@ import { CommonModule } from '@angular/common';
                 View My Work
                 <span class="arrow">→</span>
               </a>
-              <a href="assets/Resume - Saravanan.B.pdf" target="_blank" class="btn btn-outline">Download CV</a>
+              <a href="assets/Saravanan B.pdf" target="_blank" class="btn btn-outline">Download CV</a>
             </div>
           </div>
           <div class="hero-image fade-in-up" [class.visible]="isVisible()">
@@ -204,13 +204,13 @@ import { CommonModule } from '@angular/common';
 export class HeroComponent implements OnInit {
   isVisible = signal(false);
   currentText = signal('');
-  
-  private texts = [
-    'B.Tech IT Student',
-    'Full Stack Developer',
-    'IoT Enthusiast',
-    'Data Insights Analyst'
-  ];
+
+  roles = signal([
+    'Frontend Developer',
+    'MERN Stack Specialist',
+    'IIoT Enthusiast',
+    'Problem Solver'
+  ]);
   private textIndex = 0;
   private charIndex = 0;
   private isDeleting = false;
@@ -221,8 +221,8 @@ export class HeroComponent implements OnInit {
   }
 
   typeWriter() {
-    const current = this.texts[this.textIndex];
-    
+    const current = this.roles()[this.textIndex];
+
     if (this.isDeleting) {
       this.currentText.set(current.substring(0, this.charIndex - 1));
       this.charIndex--;
@@ -238,7 +238,7 @@ export class HeroComponent implements OnInit {
       this.isDeleting = true;
     } else if (this.isDeleting && this.charIndex === 0) {
       this.isDeleting = false;
-      this.textIndex = (this.textIndex + 1) % this.texts.length;
+      this.textIndex = (this.textIndex + 1) % this.roles().length;
       speed = 500;
     }
 

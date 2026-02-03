@@ -1,10 +1,11 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, AfterViewInit, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ProjectModalComponent } from './project-modal.component';
 
 @Component({
   selector: 'app-projects',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ProjectModalComponent],
   template: `
     <section id="projects" class="projects">
       <div class="container">
@@ -16,19 +17,15 @@ import { CommonModule } from '@angular/common';
         <div class="projects-grid">
           <div class="project-card fade-in-up" [class.visible]="isVisible()" 
                *ngFor="let project of projects; let i = index"
-               [style.animation-delay.ms]="i * 200">
+               [style.transition-delay.ms]="i * 200">
             <div class="project-image">
               <img [src]="project.image" [alt]="project.title">
               <div class="project-overlay">
                 <div class="project-links">
-                  <a [href]="project.demo" class="project-link" target="_blank">
-                    <span class="icon">👁️</span>
-                    Demo
-                  </a>
-                  <a [href]="project.github" class="project-link" target="_blank">
-                    <span class="icon">📂</span>
-                    Code
-                  </a>
+                  <button class="project-link" (click)="selectedProject.set(project)">
+                    <span class="icon">🔍</span>
+                    Details
+                  </button>
                 </div>
               </div>
             </div>
@@ -42,6 +39,12 @@ import { CommonModule } from '@angular/common';
           </div>
         </div>
       </div>
+
+      <app-project-modal 
+        *ngIf="selectedProject()" 
+        [project]="selectedProject()" 
+        (close)="selectedProject.set(null)">
+      </app-project-modal>
     </section>
   `,
   styles: [`
@@ -78,16 +81,14 @@ import { CommonModule } from '@angular/common';
       overflow: hidden;
       border: 1px solid var(--border);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      animation: projectFadeIn 0.6s ease-out forwards;
       opacity: 0;
       transform: translateY(30px);
     }
     
-    @keyframes projectFadeIn {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .project-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .project-card:hover {
@@ -146,6 +147,9 @@ import { CommonModule } from '@angular/common';
       border-radius: 0.5rem;
       font-weight: 500;
       transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
     }
     
     .project-link:hover {
@@ -199,33 +203,82 @@ import { CommonModule } from '@angular/common';
     }
   `]
 })
-export class ProjectsComponent implements OnInit {
+export class ProjectsComponent implements OnInit, AfterViewInit {
   isVisible = signal(false);
-  
+  selectedProject = signal<any>(null);
+
+  constructor(private el: ElementRef) { }
+
   projects = [
     {
-      title: 'TyreGuard - IoT Monitoring System',
-      description: 'IIoT-based wireless sensor system for monitoring tyre health in mining dumpers with real-time pressure, temperature, and TKPH data.',
+      title: 'Public Complaint Prioritization System',
+      description: 'NLP-based classification system using TF-IDF and Logistic Regression to automatically prioritize citizen complaints by urgency.',
+      image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
+      demo: '#',
+      github: '#',
+      tags: ['Python', 'NLP', 'Machine Learning', 'TF-IDF'],
+      details: [
+        'Automated urgency classification (High/Medium/Low)',
+        'Built with Scikit-learn and NLTK',
+        'Implemented Logistic Regression model',
+        'Efficient text vectorized using TF-IDF'
+      ]
+    },
+    {
+      title: 'Government Scheme Awareness Dashboard',
+      description: 'Data-driven Power BI dashboard analyzing welfare scheme awareness to identify high-risk regions and support policy decisions.',
+      image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80',
+      demo: '#',
+      github: '#',
+      tags: ['Power BI', 'Data Analytics', 'Excel'],
+      details: [
+        'Analyzed open government datasets',
+        'Visualized scheme utilization trends',
+        'Identified underserved regions',
+        'Provided data-backed policy insights'
+      ]
+    },
+    {
+      title: 'TyreGuard - Smart Monitoring System',
+      description: 'IIoT-based system monitoring tyre pressure, temperature, and TKPH in real time for mining dumpers with predictive alerts.',
       image: 'assets/dashboard 1.png',
       demo: '#',
       github: 'https://github.com/saravanan2004/tyreguard-project',
-      tags: ['MERN Stack', 'Socket.IO', 'Arduino', 'IoT Sensors']
+      tags: ['React.js', 'Socket.IO', 'Arduino', 'Sensors'],
+      details: [
+        'Real-time data streaming with Socket.IO',
+        'Arduino-based sensor integration',
+        'Predictive maintenance alert system',
+        'Multi-vehicle monitoring dashboard'
+      ]
     },
     {
-      title: 'Students Laboratory Foyer',
-      description: 'Student attendance management system with admin reporting capabilities and responsive frontend for seamless data submission.',
+      title: 'Students Laboratory Foyers',
+      description: 'Web-based system to manage student laboratory attendance and administrative reporting with seamless database integration.',
       image: 'assets/Screenshot 2024-07-01 200813.png',
       demo: '#',
       github: 'https://github.com/saravanan2004/SLF',
-      tags: ['MERN Stack', 'MongoDB', 'React', 'Node.js']
+      tags: ['MERN Stack', 'MongoDB', 'React', 'Node.js'],
+      details: [
+        'Streamlined attendance tracking',
+        'Automated admin reporting panel',
+        'Responsive MERN stack architecture',
+        'Secure multi-user authentication'
+      ]
     },
     {
       title: 'Men\'s Hub Fashion Website',
-      description: 'Dynamic fashion website for men\'s apparel with seamless shopping experience, built during internship at NXTLogic Software Solutions.',
+      description: 'Dynamic fashion platform providing a smooth shopping experience with efficient front-end design and back-end management.',
       image: 'https://images.pexels.com/photos/996329/pexels-photo-996329.jpeg?auto=compress&cs=tinysrgb&w=600',
       demo: 'https://mens-hub.netlify.app/',
       github: 'https://github.com/saravanan2004/Fashion-website',
-      tags: ['HTML', 'CSS', 'JavaScript', 'ASP.NET']
+      tags: ['HTML', 'CSS', 'JavaScript', 'ASP.NET'],
+      details: [
+        'Comprehensive product management',
+        'Modern, responsive shopping UI',
+        'Seamless cart and checkout flow',
+        'Developed as part of a tech team'
+      ]
     },
     {
       title: 'CRIC_KIT Shopping Website',
@@ -233,11 +286,19 @@ export class ProjectsComponent implements OnInit {
       image: 'https://images.pexels.com/photos/1661950/pexels-photo-1661950.jpeg?auto=compress&cs=tinysrgb&w=600',
       demo: '#',
       github: 'https://github.com/saravanan2004/cricket-kit-e-commerce',
-      tags: ['React.js', 'Node.js', 'MySQL', 'AppScript']
+      tags: ['React.js', 'Node.js', 'MySQL', 'AppScript'],
+      details: [
+        'Dynamic product catalog with search/filter',
+        'Smooth checkout process and order management',
+        'Integration with AppScript for automation',
+        'Responsive layout for all screen sizes'
+      ]
     }
   ];
 
-  ngOnInit() {
+  ngOnInit() { }
+
+  ngAfterViewInit() {
     this.setupIntersectionObserver();
   }
 
@@ -247,15 +308,16 @@ export class ProjectsComponent implements OnInit {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             this.isVisible.set(true);
+            observer.unobserve(entry.target);
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.1, rootMargin: '0px 0px -100px 0px' }
     );
 
-    const projectsSection = document.getElementById('projects');
-    if (projectsSection) {
-      observer.observe(projectsSection);
+    const section = this.el.nativeElement.querySelector('#projects');
+    if (section) {
+      observer.observe(section);
     }
   }
 }
