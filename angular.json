@@ -33,9 +33,13 @@
             "index": "src/index.html",
             "browser": "src/main.ts",
             "outputPath": "dist/demo",
-            "polyfills": ["zone.js"],
+            "polyfills": [
+              "zone.js"
+            ],
             "scripts": [],
-            "styles": ["src/global_styles.css"],
+            "styles": [
+              "src/global_styles.css"
+            ],
             "tsConfig": "tsconfig.app.json"
           }
         },
@@ -52,7 +56,11 @@
           "defaultConfiguration": "development"
         },
         "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
+          "builder": "angular-cli-ghpages:deploy",
+          "options": {
+            "dir": "dist/demo/browser",
+            "baseHref": "/angular-portfolio/"
+          }
         }
       },
       "prefix": "app",
